@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Money Manager
 
-## Getting Started
+A personal finance web app: income, expenses, savings goals, budgets, reports, and (where officially supported) connected financial accounts.
 
-First, run the development server:
+## Stack
+
+Next.js 16 (App Router, Turbopack, React Compiler) · React 19 · TypeScript · Tailwind CSS v4 · shadcn/ui (Radix) · Recharts · Lucide · Prisma + PostgreSQL · Auth.js · Zod · decimal.js
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # fill values as each phase requires them
+npm run dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Script              | Purpose                          |
+| ------------------- | -------------------------------- |
+| `npm run dev`       | Dev server (Turbopack)           |
+| `npm run build`     | Production build                 |
+| `npm run typecheck` | `tsc --noEmit`                   |
+| `npm run lint`      | ESLint                           |
+| `npm run check`     | Typecheck + lint                 |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+  app/                      Routes (App Router)
+    (auth)/                 Sign-in / register            (Phase 3)
+    (app)/                  Authenticated area + sidebar  (Phase 4+)
+    api/                    Route handlers (auth, CSV export, provider callbacks)
+  components/
+    ui/                     shadcn/ui primitives (generated, lightly edited)
+    providers/              Client providers (theme, tooltip, toasts)
+    layout/ dashboard/ ...  Feature components            (later phases)
+  config/                   Site config, navigation
+  features/<domain>/        Business logic per domain     (Phase 5+)
+    actions.ts              Server Actions (auth check + Zod + service call)
+    service.ts              Pure domain logic, user-scoped Prisma queries
+    schemas.ts              Zod schemas shared by forms and server
+  lib/                      Cross-cutting: env, money, db, auth helpers
+  server/integrations/      Financial provider adapters   (Phase 7)
+prisma/                     Schema + migrations           (Phase 2)
+```
 
-## Learn More
+## Money handling
 
-To learn more about Next.js, take a look at the following resources:
+Amounts are never JS floats. They are stored as PostgreSQL `NUMERIC`, computed with `decimal.js` (`src/lib/money.ts`), and passed between server and client as strings.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [PROGRESS.md](./PROGRESS.md) for the phase-by-phase roadmap.
