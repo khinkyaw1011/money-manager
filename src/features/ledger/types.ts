@@ -19,10 +19,12 @@ export const INCOME_CATEGORIES = ["Salary", "Freelance", "Business", "Other inco
 
 export const EXPENSE_CATEGORIES = [
   "Food",
-  "Shopping",
-  "Transportation",
-  "Rent",
-  "Utilities",
+  "Rent / house fee",
+  "Water bill",
+  "Gas bill",
+  "Electric bill",
+  "Cosmetics",
+  "Traffic fee",
   "Healthcare",
   "Entertainment",
 ] as const;

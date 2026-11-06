@@ -8,12 +8,22 @@ interface StatTileProps {
   icon: LucideIcon;
   /** Tailwind classes for the icon chip, e.g. "text-income bg-income/10". */
   iconClassName: string;
+  /** Extra classes for the headline value, e.g. "text-expense". */
+  valueClassName?: string;
   hint?: React.ReactNode;
   children?: React.ReactNode;
 }
 
 /** Headline number tile. Value text stays in neutral ink; the icon carries identity. */
-export function StatTile({ label, value, icon: Icon, iconClassName, hint, children }: StatTileProps) {
+export function StatTile({
+  label,
+  value,
+  icon: Icon,
+  iconClassName,
+  valueClassName,
+  hint,
+  children,
+}: StatTileProps) {
   return (
     <Card className="gap-3">
       <CardHeader className="flex flex-row items-center justify-between gap-2">
@@ -23,7 +33,14 @@ export function StatTile({ label, value, icon: Icon, iconClassName, hint, childr
         </span>
       </CardHeader>
       <CardContent className="space-y-2">
-        <p className="text-2xl font-semibold tracking-tight tabular-nums">{value}</p>
+        <p
+          className={cn(
+            "text-2xl font-semibold tracking-tight tabular-nums",
+            valueClassName,
+          )}
+        >
+          {value}
+        </p>
         {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
         {children}
       </CardContent>

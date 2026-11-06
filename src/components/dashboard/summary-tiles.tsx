@@ -76,9 +76,14 @@ export function SummaryTiles({ summary }: { summary: DashboardSummary }) {
       />
       <StatTile
         label="Monthly expenses"
-        value={fmt(monthly.expenses)}
+        value={
+          new Decimal(monthly.expenses).greaterThan(0)
+            ? `−${fmt(monthly.expenses)}`
+            : fmt("0")
+        }
         icon={TrendingDown}
         iconClassName="text-expense bg-expense/10"
+        valueClassName="text-expense"
         hint={currentMonth.label}
       />
       <StatTile

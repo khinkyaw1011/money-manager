@@ -14,6 +14,10 @@ import Google from "next-auth/providers/google";
  *   GOOGLE_CLIENT_SECRET – Google OAuth client secret
  */
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // Vercel terminates TLS and forwards the host; trust it so Auth.js builds
+  // the correct https callback URL.
+  trustHost: true,
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,

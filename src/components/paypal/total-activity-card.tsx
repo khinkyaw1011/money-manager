@@ -83,6 +83,12 @@ export function TotalActivityCard({
   }
 
   const singleCurrency = totals.length === 1;
+  const isExpense = direction === "EXPENSE";
+  const valueClass = isExpense ? "text-expense" : undefined;
+  const amountLabel = (amount: Decimal | string, currency: string) => {
+    const formatted = formatMoney(amount, currency, siteConfig.defaultLocale);
+    return isExpense && new Decimal(amount).greaterThan(0) ? `−${formatted}` : formatted;
+  };
 
   return (
     <section aria-label={copy.label} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -92,6 +98,7 @@ export function TotalActivityCard({
           value="—"
           icon={Icon}
           iconClassName={copy.tone}
+          valueClassName={valueClass}
           hint={`${copy.empty} in the last ${days} days`}
         />
       ) : (
@@ -99,9 +106,10 @@ export function TotalActivityCard({
           <StatTile
             key={currency}
             label={singleCurrency ? copy.label : `${copy.label} (${currency})`}
-            value={formatMoney(total.total, currency, siteConfig.defaultLocale)}
+            value={amountLabel(total.total, currency)}
             icon={Icon}
             iconClassName={copy.tone}
+            valueClassName={valueClass}
             hint={`${total.manualCount} manual · ${total.paypalCount} PayPal (last ${days} days)`}
           />
         ))

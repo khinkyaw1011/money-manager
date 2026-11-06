@@ -191,7 +191,7 @@ export function LedgerSection({
             <CardDescription>
               {kind === "INCOME"
                 ? "Salary, freelance, business and other income."
-                : "Food, shopping, transportation, rent, utilities, healthcare, entertainment and custom categories."}{" "}
+                : "Food, rent, utilities, cosmetics, traffic, healthcare, entertainment and custom categories."}{" "}
               Saved in this browser.
             </CardDescription>
           </div>

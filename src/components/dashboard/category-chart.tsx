@@ -1,12 +1,14 @@
 "use client";
 
 import Decimal from "decimal.js";
+import { useMemo } from "react";
 import { Bar, BarChart, LabelList, XAxis, YAxis } from "recharts";
 import { ChartCard } from "@/components/dashboard/chart-card";
 import { MoneyTooltip } from "@/components/dashboard/money-tooltip";
 import { ChartContainer, ChartTooltip, type ChartConfig } from "@/components/ui/chart";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { CategoryPoint } from "@/features/dashboard/types";
+import { useLedger } from "@/hooks/use-ledger";
 import { formatMonthKey } from "@/lib/format";
 import { formatMoney, toMoneyString } from "@/lib/money";
 
@@ -31,7 +33,28 @@ interface CategoryChartProps {
 }
 
 export function CategoryChart({ items, month, currency }: CategoryChartProps) {
-  const folded = foldCategories(items);
+  const { entries } = useLedger();
+
+  const mergedItems = useMemo(() => {
+    const totals = new Map(
+      items.map((item) => [item.category, new Decimal(item.amount)]),
+    );
+
+    for (const entry of entries) {
+      if (entry.kind !== "EXPENSE" || entry.currency !== currency) continue;
+      if (entry.date.slice(0, 7) !== month) continue;
+      totals.set(
+        entry.category,
+        (totals.get(entry.category) ?? new Decimal(0)).plus(entry.amount),
+      );
+    }
+
+    return [...totals.entries()]
+      .sort(([, a], [, b]) => b.comparedTo(a))
+      .map(([category, amount]) => ({ category, amount: toMoneyString(amount) }));
+  }, [items, entries, currency, month]);
+
+  const folded = foldCategories(mergedItems);
   const data = folded.map((c) => ({ category: c.category, amount: Number(c.amount) }));
 
   return (
@@ -76,7 +99,7 @@ export function CategoryChart({ items, month, currency }: CategoryChartProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((c) => (
+            {mergedItems.map((c) => (
               <TableRow key={c.category}>
                 <TableCell>{c.category}</TableCell>
                 <TableCell className="text-right tabular-nums">{formatMoney(c.amount, currency)}</TableCell>
